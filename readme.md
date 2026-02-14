@@ -14,3 +14,5 @@ So instead of feeding the motor, I will feed the RP2040 and it will convert into
 ![alt text](<pics/board (2).jpeg>)
 ![alt text](<pics/board (3).jpeg>)
 ![alt text](pics/schematics.jpeg)
+![alt text](pics/logic-signals.jpeg)
+![alt text](pics/models.jpeg)
