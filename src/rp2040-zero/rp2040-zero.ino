@@ -1,37 +1,38 @@
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 
+#define USE_ACCEL_RAMP 0
 // ---------------- Pines ----------------
 
 // Entradas receptor
-const int DIR_A = 2;
-const int DIR_B = 3;
-const int THR_A = 4;
-const int THR_B = 5;
+const int THR_FWD = 2;
+const int THR_REV = 3;
+const int DIR_LEFT = 5;
+const int DIR_RIGHT = 4;
 
 // Salidas motor
-const int IN1 = 10;
-const int IN2 = 11;
+const int IN1 = 9;
+const int IN2 = 10;
 
 // Servo
 const int SERVO_PIN = 15;
 Servo steering;
 
-// LED RGB integrado (WS2812)
+// LED RGB integrado
 const int LED_PIN = 16;
 Adafruit_NeoPixel pixel(1, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // ---------------- Servo ----------------
-const int SERVO_LEFT = 60;
+const int SERVO_LEFT = 15;
 const int SERVO_CENTER = 90;
-const int SERVO_RIGHT = 120;
+const int SERVO_RIGHT = 165;
 
 // ---------------- Control motor ----------------
 int targetSpeed = 0;
 int currentSpeed = 0;
 
-const int ACCEL_STEP = 5;
-const int BRAKE_STEP = 10;
+const int ACCEL_STEP = 15;
+const int BRAKE_STEP = 15;
 
 // ---------------- Funciones ----------------
 void setMotor(int speed) {
@@ -40,12 +41,10 @@ void setMotor(int speed) {
   if (speed > 0) {
     analogWrite(IN1, speed);
     analogWrite(IN2, 0);
-  } 
-  else if (speed < 0) {
+  } else if (speed < 0) {
     analogWrite(IN1, 0);
     analogWrite(IN2, -speed);
-  } 
-  else {
+  } else {
     analogWrite(IN1, 0);
     analogWrite(IN2, 0);
   }
@@ -58,13 +57,16 @@ void setLED(uint8_t r, uint8_t g, uint8_t b) {
 
 // ---------------- Setup ----------------
 void setup() {
-  pinMode(DIR_A, INPUT);
-  pinMode(DIR_B, INPUT);
-  pinMode(THR_A, INPUT);
-  pinMode(THR_B, INPUT);
+  pinMode(THR_FWD, INPUT);
+  pinMode(THR_REV, INPUT);
+  pinMode(DIR_LEFT, INPUT);
+  pinMode(DIR_RIGHT, INPUT);
 
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
+
+  analogWriteFreq(20000);  // 20 kHz, silencioso y eficiente
+  analogWriteRange(255);
 
   steering.attach(SERVO_PIN);
   steering.write(SERVO_CENTER);
@@ -76,60 +78,61 @@ void setup() {
 
 // ---------------- Loop ----------------
 void loop() {
-  // -------- Dirección --------
-  bool dirA = digitalRead(DIR_A);
-  bool dirB = digitalRead(DIR_B);
 
-  if (dirA && !dirB) {
+  // -------- Dirección --------
+  bool left = digitalRead(DIR_LEFT);
+  bool right = digitalRead(DIR_RIGHT);
+
+  if (left && !right) {
     steering.write(SERVO_LEFT);
-  } 
-  else if (!dirA && dirB) {
+  } else if (!left && right) {
     steering.write(SERVO_RIGHT);
-  } 
-  else {
+  } else {
     steering.write(SERVO_CENTER);
   }
 
   // -------- Tracción --------
-  bool thrA = digitalRead(THR_A);
-  bool thrB = digitalRead(THR_B);
+  bool fwd = digitalRead(THR_FWD);
+  bool rev = digitalRead(THR_REV);
 
-  if (thrA && !thrB) {
-    targetSpeed = 200;   // adelante
-  } 
-  else if (!thrA && thrB) {
-    targetSpeed = -150;  // reversa
-  } 
-  else {
+  if (fwd && !rev) {
+    targetSpeed = 255;
+  } else if (!fwd && rev) {
+    targetSpeed = -255;
+  } else {
     targetSpeed = 0;
   }
 
   // -------- Rampa de velocidad --------
+#if USE_ACCEL_RAMP
+
+  // Rampa progresiva
   if (currentSpeed < targetSpeed) {
     currentSpeed += ACCEL_STEP;
     if (currentSpeed > targetSpeed)
       currentSpeed = targetSpeed;
-  }
-  else if (currentSpeed > targetSpeed) {
+  } else if (currentSpeed > targetSpeed) {
     currentSpeed -= BRAKE_STEP;
     if (currentSpeed < targetSpeed)
       currentSpeed = targetSpeed;
   }
 
+#else
+
+  // Respuesta instantánea
+  currentSpeed = targetSpeed;
+
+#endif
+
   setMotor(currentSpeed);
 
-  // -------- Estado LED --------
+  // -------- LED de estado --------
   if (currentSpeed == 0) {
-    // Idle
-    setLED(0, 0, 50); // azul suave
-  }
-  else if (currentSpeed > 0) {
-    // Acelerando
-    setLED(0, 50, 0); // verde
-  }
-  else {
-    // Reversa / freno
-    setLED(50, 0, 0); // rojo
+    setLED(0, 0, 50);  // azul
+  } else if (currentSpeed > 0) {
+    setLED(0, 50, 0);  // verde
+  } else {
+    setLED(50, 0, 0);  // rojo
   }
 
   delay(20);
