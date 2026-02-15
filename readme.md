@@ -20,6 +20,11 @@ So instead of feeding the motor, I will feed the RP2040 and it will convert into
 - DC Motor (whatever you can get)
 - 2 x 18650 3.7 battery
 
+## 3D Models
+https://www.tinkercad.com/things/1ACjphVFdlr-mcqueen-hack-2026/edit?returnTo=%2Fdashboard%2Fdesigns%2F3d
+
+![alt text](pics/3dmodel.png)
+
 ## Setup for RP2040 Zero
 
 1. **Install Arduino IDE / CLI**
