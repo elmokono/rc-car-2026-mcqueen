@@ -1,0 +1,42 @@
+name: Build RP2040 Firmware
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Configure Arduino CLI (RP2040 URL)
+        run: |
+          arduino-cli config init
+          arduino-cli config set board_manager.additional_urls \
+            https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+
+      - name: Install RP2040 core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install rp2040:rp2040
+
+      - name: Compile firmware (RP2040 Zero)
+        run: |
+          arduino-cli compile \
+            --fqbn rp2040:rp2040:waveshare_rp2040_zero \
+            --output-dir build \
+            src/rp2040-zero/rp2040-zero.ino
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rp2040-zero-bin
+          path: build/*.uf2

@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "RP2040 Zero",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:LOCALAPPDATA}/Arduino15/packages/rp2040/hardware/rp2040/**",
+                "${env:LOCALAPPDATA}/Arduino15/packages/rp2040/tools/**"
+            ],
+            "defines": [
+                "ARDUINO=10805",
+                "ARDUINO_ARCH_RP2040",
+                "ARDUINO_RP2040",
+                "ARDUINO_NANO_RP2040_CONNECT"
+            ],
+            "intelliSenseMode": "windows-gcc-arm",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

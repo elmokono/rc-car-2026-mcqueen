@@ -20,7 +20,30 @@ So instead of feeding the motor, I will feed the RP2040 and it will convert into
 - DC Motor (whatever you can get)
 - 2 x 18650 3.7 battery
 
-**Code in /src**
+## Setup for RP2040 Zero
+
+1. **Install Arduino IDE / CLI**
+   - Download [Arduino IDE](https://www.arduino.cc/en/software) or install `arduino-cli` via package manager.
+
+2. **Add RP2040 Board Support**
+   - In Arduino IDE: `Preferences` → `Additional Boards Manager URLs`, add:
+     ```
+     https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+     ```
+   - Then `Tools` → `Board Manager` → search `RP2040` → install **Raspberry Pi RP2040 (Earle Philhower)**.
+
+3. **Select Board & Port**
+   - `Tools` → `Board` → `Raspberry Pi RP2040 / Raspberry Pi Pico`
+   - `Tools` → `Port` → select your USB port (e.g., `COM3`)
+
+4. **Upload Sketch**
+   - Hold the `BOOT` button on RP2040 Zero, connect USB, then release.
+   - Click **Upload** in Arduino IDE, or use:
+     ```
+     arduino-cli upload --fqbn rp2040:rp2040:raspberry_pi_pico --port COM3 src/rp2040-zero/rp2040-zero.ino
+     ```
+
+## Code in /src
 
 - **File**: `src/rp2040-zero/rp2040-zero.ino`: Arduino sketch for an RP2040 Zero that converts receiver signals into motor, steering and status-LED outputs.
 - **Inputs**: reads receiver channels (`THR_FWD`, `THR_REV`, `DIR_LEFT`, `DIR_RIGHT`) to determine throttle and steering commands.

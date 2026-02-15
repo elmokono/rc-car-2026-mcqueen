@@ -1,0 +1,49 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build RP2040 Zero",
+            "type": "shell",
+            "command": "arduino-cli",
+            "args": [
+                "compile",
+                "--fqbn",
+                "rp2040:rp2040:waveshare_rp2040_zero",
+                "--output-dir",
+                "build",
+                "src/rp2040-zero/rp2040-zero.ino"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Upload RP2040 Zero (USB)",
+            "type": "shell",
+            "command": "arduino-cli",
+            "args": [
+                "upload",
+                "--fqbn",
+                "rp2040:rp2040:waveshare_rp2040_zero",
+                "--port",
+                "COM3",
+                "src/rp2040-zero/rp2040-zero.ino"
+            ],
+            "dependsOn": "Build RP2040 Zero",
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}
