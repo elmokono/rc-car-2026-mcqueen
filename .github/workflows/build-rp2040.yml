@@ -28,6 +28,10 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install rp2040:rp2040
 
+      - name: Install libraries
+        run: |
+          arduino-cli lib install "Adafruit NeoPixel"
+
       - name: Compile firmware (RP2040 Zero)
         run: |
           arduino-cli compile \
