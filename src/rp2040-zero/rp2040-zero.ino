@@ -10,6 +10,9 @@ const int THR_REV = 3;
 const int DIR_LEFT = 5;
 const int DIR_RIGHT = 4;
 
+unsigned long lastActiveTime = 0;
+const int NEUTRAL_DELAY = 100;  // ms
+
 // Salidas motor
 const int IN1 = 9;
 const int IN2 = 10;
@@ -95,12 +98,19 @@ void loop() {
   bool fwd = digitalRead(THR_FWD);
   bool rev = digitalRead(THR_REV);
 
+  unsigned long now = millis();
+
   if (fwd && !rev) {
     targetSpeed = 255;
+    lastActiveTime = now;
   } else if (!fwd && rev) {
     targetSpeed = -255;
+    lastActiveTime = now;
   } else {
-    targetSpeed = 0;
+    // posible neutro
+    if (now - lastActiveTime > NEUTRAL_DELAY) {
+      targetSpeed = 0;
+    }
   }
 
   // -------- Rampa de velocidad --------
